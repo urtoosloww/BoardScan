@@ -500,7 +500,7 @@ export async function processImage(
   // Flag pixels whose local mean deviates from the mat color.
   // Threshold 30: above JPEG block artifacts (~15 levels) yet below typical
   // component contrast (gold resistor ≈ 49, dark components ≈ 188+).
-  let binary = new Uint8Array(outW * outH);
+  let binary: Uint8Array<ArrayBuffer> = new Uint8Array(outW * outH);
   for (let i = 0; i < outW * outH; i++)
     binary[i] = Math.abs(localBlur[i] - bgGray) > 30 ? 1 : 0;
 
@@ -532,10 +532,10 @@ export async function processImage(
   //        while keeping real components (smallest ≈ 40px in scaled image).
   const closeR = Math.max(5, Math.round(gridSpacingPx * 0.07));
   const openR  = Math.max(6, Math.round(gridSpacingPx * 0.08));
-  binary = dilateSep(binary, outW, outH, closeR);
-  binary = erodeSep(binary, outW, outH, closeR);
-  binary = erodeSep(binary, outW, outH, openR);
-  binary = dilateSep(binary, outW, outH, openR);
+  binary = dilateSep(binary, outW, outH, closeR) as Uint8Array<ArrayBuffer>;
+  binary = erodeSep(binary, outW, outH, closeR) as Uint8Array<ArrayBuffer>;
+  binary = erodeSep(binary, outW, outH, openR) as Uint8Array<ArrayBuffer>;
+  binary = dilateSep(binary, outW, outH, openR) as Uint8Array<ArrayBuffer>;
 
   const blobs = connectedComponents(binary, outW, outH);
 
